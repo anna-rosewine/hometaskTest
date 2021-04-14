@@ -59,10 +59,74 @@ describe('RegistrationForm', () => {
             btn.click();
             expect(clickSpy).toBeCalled();
         });
-        it.only('should be disabled', () => {
+        it('should be disabled', () => {
             expect.assertions(1);
             const btn = document.getElementById('createAccount');
             expect(btn.disabled).toBe(true);
         })
     });
+    describe('Email Input', () => {
+        it('should check if mail valid', () => {
+            expect.assertions(2);
+            // document.body.innerHTML = " ";
+            // const keyUp = jest.spyOn(RegistrationForm, "checkEmailValidation");
+            // const r = new RegistrationForm();
+            // document.body.append(r.dom);
+            const enteredValidEmail = "jensen.ackles@gmail.com";
+            const enteredInvalidEmail = "somethingWrong";
+            expect(form.checkEmailValidation(enteredValidEmail)).toBe(true);
+            expect(form.checkEmailValidation(enteredInvalidEmail)).toEqual('Your email is not valid')
+        });
+    })
+    describe('Password Input', () => {
+        it('length should be not less, than 8', () => {
+            expect.assertions(1);
+            const password = 'anna';
+            form.checkPassword(password)
+            expect(form.errors).toContain('Your password should not be less, than 8 symbols');
+        })
+
+        it('should contain number', () => {
+            expect.assertions(1);
+            const password = 'anna';
+            form.checkPassword(password)
+            expect(form.errors).toEqual(expect.stringContaining('Your password should contain a number'));
+        })
+
+        it('should contain lowercase eng symbol', () => {
+            expect.assertions(1);
+            const password = 'ADHIL9';
+            form.checkPassword(password)
+            expect(form.errors).toEqual(expect.stringContaining('Your password should contain english symbol lowercase'));
+        })
+
+        it('should contain eng symb uppercase', () => {
+            expect.assertions(1);
+            const password = 'anna9';
+            form.checkPassword(password)
+            expect(form.errors).toEqual(expect.stringContaining('Your password should contain english symbol uppercase'));
+
+        })
+
+        it('should contain special symbol', () => {
+            expect.assertions(1);
+            const password = 'anna9';
+            expect(form.checkPassword(password)).toEqual(expect.stringContaining('Your password should contain special symbol'))
+        })
+
+        it('should check if password is acceptable', () => {
+            expect.assertions(1);
+            const password = "Jensen7@Ackles";
+            expect(form.checkPassword(password)).toEqual('Your password is acceptable')
+        })
+    })
+    describe('Repeat Password Input', () => {
+        it('should match with password inout', () => {
+            expect.assertions(1);
+            const pass = "Ackles222@Jensen";
+            const repeatCorrect = "Ackles222@Jensen";
+            const repeatIncorrect = "Anna";
+            expect(form.matchError).toEqual(expect.stringContaining('Passwords do not match'))
+        })
+    })
 });
