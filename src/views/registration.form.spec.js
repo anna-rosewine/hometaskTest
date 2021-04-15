@@ -247,28 +247,52 @@ describe('RegistrationForm', () => {
             })
         })
     })
-    describe.only('Button Create Account', () => {
+    describe('Button Create Account', () => {
 
         it('should be disabled', () => {
             expect.assertions(1);
             const btn = document.getElementById('createAccount');
             expect(btn.disabled).toBe(true);
         })
-        it('should call createAccount() method if clicked', () => {
+        describe('createAccount()', () => {
+            it('should call createAccount() method if clicked', () => {
+                expect.assertions(1);
+                document.body.innerHTML = " ";
+                const clickSpy = jest.spyOn(RegistrationForm.prototype, "createAccount")
+                window.alert = jest.fn();
+                const r = new RegistrationForm();
+                document.body.append(r.dom);
+                const btn = document.getElementById('createAccount');
+                btn.disabled = false;
+                btn.click();
+                expect(clickSpy).toBeCalled();
+            });
+            it('createAccount() message should contain information about user', () => {
+
+            })
+
+        })
+
+        it('should work if email, password, repeat password inputs are valid', () => {
             expect.assertions(1);
+            form.emailValue = 'jensen.ackles@gmail.com';
+            form.passwordValue = "Ackles222@Jensen";
+            form.repeatPasswordValue = "Ackles222@Jensen";
+            form.toAbleBtn();
+            const btn = document.getElementById('createAccount')
+            expect(btn.disabled).toBe(false);
+        })
+        it('should call toAbleBtn() method after keyUp', () => {
+            expect.assertions(1)
             document.body.innerHTML = " ";
-            const clickSpy = jest.spyOn(RegistrationForm.prototype, "createAccount")
-            window.alert = jest.fn();
+            const keyUp = jest.spyOn(RegistrationForm.prototype, 'toAbleBtn').mockImplementation(() => {
+                return true;
+            });
             const r = new RegistrationForm();
             document.body.append(r.dom);
-            const btn = document.getElementById('createAccount');
-            btn.disabled = false;
-            btn.click();
-            expect(clickSpy).toBeCalled();
+            const dom = document.getElementById('container');
+            triggerEvent(dom, 'keyup');
+            expect(keyUp).toBeCalled();
         });
-        // it('should work if email, password, repeat password inputs are valid', () => {
-        //     expect.assertions(1);
-        //     expect()
-        // })
     });
 });

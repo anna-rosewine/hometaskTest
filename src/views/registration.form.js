@@ -17,13 +17,6 @@ export class RegistrationForm {
     #repeatPasswordValidState;
     #repeatPasswordValidContainer;
 
-
-
-
-
-    #errors;
-    #matchError;
-    #errorContainer;
     constructor(){
         this.#dom = el("div#container", "RegistrationForm");
         this.#header = el("h2#header", "Create account");
@@ -34,16 +27,12 @@ export class RegistrationForm {
         this.#repeatPasswordInput = el("input#repeatPasswordInput");
         this.#repeatPasswordValidContainer = el("div.validationInfo", this.#repeatPasswordValidState);
         this.#btn = el("button#createAccount", {disabled: true}, "Create account");
-        // this.#errorContainer = el("div#errorContainer", this.#errors);
-        //
-        // this.#matchError = 'Passwords do not match';
 
         mount(this.#dom, this.#header);
         mount(this.#dom, this.#emailInput);
         mount(this.#dom, this.#emailValidContainer)
         mount(this.#dom, this.#passwordInput);
         mount(this.#dom, this.#passwordValidContainer)
-        // mount(this.#dom, this.#errorContainer);
         mount(this.#dom, this.#repeatPasswordInput);
         mount(this.#dom, this.#repeatPasswordValidContainer)
         mount(this.#dom, this.#btn);
@@ -52,6 +41,7 @@ export class RegistrationForm {
         this.#emailInput.addEventListener('keyup', this.checkEmailValidation);
         this.#passwordInput.addEventListener('keyup', this.checkPassword);
         this.#repeatPasswordInput.addEventListener('keyup', this.checkRepeatPass);
+        this.#dom.addEventListener('keyup', this.toAbleBtn);
 
     }
 
@@ -109,7 +99,14 @@ export class RegistrationForm {
     }
 
     createAccount(){
-        alert(`User with email ${this.emailValue} is successfully created`);
+        this.user = {
+            email: this.emailValue,
+            password: this.passwordValue,
+        }
+        alert(`User with email ${this.user.email} is successfully created`);
+        this.emailValue = "";
+        this.passwordValue = "";
+        this.repeatPasswordValue = "";
     }
 
     checkEmailValidation() {
@@ -163,6 +160,12 @@ export class RegistrationForm {
             return false;
         } else {
             return true;
+        }
+    }
+
+    toAbleBtn(){
+        if(this.checkEmailValidation() === true && this.checkPassword() === true && this.checkRepeatPass() === true) {
+            this.#btn.disabled = false;
         }
     }
 }
