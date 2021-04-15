@@ -7,22 +7,45 @@ export class RegistrationForm {
     #passwordInput;
     #repeatPasswordInput;
     #btn;
+
+    #emailValidState;
+    #emailValidContainer;
+
+    #passwordValidState;
+    #passwordValidContainer;
+
+    #repeatPasswordValidState;
+    #repeatPasswordValidContainer;
+
+
+
+
+
     #errors;
     #matchError;
+    #errorContainer;
     constructor(){
         this.#dom = el("div#container", "RegistrationForm");
         this.#header = el("h2#header", "Create account");
         this.#emailInput = el("input#emailInput");
+        this.#emailValidContainer = el("div.validationInfo", this.#emailValidState);
         this.#passwordInput = el("input#passwordInput");
+        this.#passwordValidContainer = el("div.validationInfo", this.#passwordValidState);
         this.#repeatPasswordInput = el("input#repeatPasswordInput");
+        this.#repeatPasswordValidContainer = el("div.validationInfo", this.#repeatPasswordValidState);
         this.#btn = el("button#createAccount", {disabled: true}, "Create account");
-
-        this.#matchError = 'Passwords do not match';
+        // this.#errorContainer = el("div#errorContainer", this.#errors);
+        //
+        // this.#matchError = 'Passwords do not match';
 
         mount(this.#dom, this.#header);
         mount(this.#dom, this.#emailInput);
+        mount(this.#dom, this.#emailValidContainer)
         mount(this.#dom, this.#passwordInput);
+        mount(this.#dom, this.#passwordValidContainer)
+        // mount(this.#dom, this.#errorContainer);
         mount(this.#dom, this.#repeatPasswordInput);
+        mount(this.#dom, this.#repeatPasswordValidContainer)
         mount(this.#dom, this.#btn);
 
         this.#btn.addEventListener('click', this.createAccount);
@@ -36,74 +59,110 @@ export class RegistrationForm {
         return this.#dom;
     }
 
-    set errors (err) {
-        this.#errors = err;
+    get emailState(){
+        return this.#emailValidState;
+    }
+    set emailState(state){
+        return this.#emailValidState = state;
     }
 
-    get errors() {
-        return this.#errors;
+    get passwordState(){
+        return this.#passwordValidState;
+    }
+    set passwordState(state){
+        return this.#passwordValidState = state;
     }
 
-    get matchError() {
-        return this.#matchError;
+    get repeatPasswordState(){
+        return this.#repeatPasswordValidState;
+    }
+    set repeatPasswordState(state){
+        return this.#repeatPasswordValidState = state;
     }
 
-    get email () {
+    get emailInput () {
         return this.#emailInput;
     }
-
-    get password () {
+    get passwordInput () {
         return this.#passwordInput;
     }
 
-    createAccount(){
-        alert(`User with email ${this.email} is successfully created`);
+    get emailValue() {
+        return this.#emailInput.value;
+    }
+    set emailValue (em) {
+        this.#emailInput.value = em;
     }
 
-    checkEmailValidation(email) {
+    get passwordValue() {
+        return this.#passwordInput.value;
+    }
+    set passwordValue (pas) {
+        this.#passwordInput.value = pas;
+    }
+
+    get repeatPasswordValue() {
+        return this.#repeatPasswordInput.value;
+    }
+    set repeatPasswordValue (pas) {
+        this.#repeatPasswordInput.value = pas;
+    }
+
+    createAccount(){
+        alert(`User with email ${this.emailValue} is successfully created`);
+    }
+
+    checkEmailValidation() {
        let emailRegExp = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-       if(emailRegExp.test(email)){
+       if(emailRegExp.test(this.emailValue)){
+           this.emailState = 'Your email is valid';
            return true;
        } else {
-          return 'Your email is not valid';
+          this.emailState = 'Your email is not valid';
+          return false;
        }
     }
 
-    checkPassword(pass){
+    checkPassword(){
         let answer = "";
-        if(pass.length < 8) {
-            answer += "Your password should not be less, than 8 symbols. ";
+        if(this.passwordValue.length < 8) {
+            answer += "Your password should not be less, than 8 symbols. </br>";
         }
         let checkNumber = /\d/;
-        if(!checkNumber.test(pass)) {
-            answer = answer +  ' Your password should contain a number.'
+        if(!checkNumber.test(this.passwordValue)) {
+            answer = answer +  ' Your password should contain a number. </br>'
         }
         let checkLowerCase = /[a-z]/;
-        if(!checkLowerCase.test(pass)){
-            answer = answer +  ' Your password should contain english symbol lowercase.'
+        if(!checkLowerCase.test(this.passwordValue)){
+            answer = answer +  ' Your password should contain english symbol lowercase. </br>'
         }
 
         let checkUpperCase = /[A-Z]/;
-        if(!checkUpperCase.test(pass)){
-            answer = answer +  ' Your password should contain english symbol uppercase.'
+        if(!checkUpperCase.test(this.passwordValue)){
+            answer = answer +  ' Your password should contain english symbol uppercase. </br>'
         }
 
         let specialSymb = /[!@#$%^&*]/;
-        if(!specialSymb.test(pass)){
-            answer = answer +  ' Your password should contain special symbol.'
+        if(!specialSymb.test(this.passwordValue)){
+            answer = answer +  ' Your password should contain special symbol. </br>'
         }
 
         if(answer.length < 2) {
-            answer = 'Your password is acceptable'
-        }
-        this.errors = answer;
-        return answer;
-    }
-
-    checkRepeatPass(password) {
-        if(this.password !== password){
-            return this.matchError;
+            answer = 'Your password is acceptable';
+            this.passwordState = answer;
+            return true;
+        } else {
+            this.passwordState = answer;
+            return false;
         }
     }
 
+    checkRepeatPass() {
+        if(this.passwordValue!== this.repeatPasswordValue){
+            this.repeatPasswordState = 'Passwords do not match';
+            return false;
+        } else {
+            return true;
+        }
+    }
 }

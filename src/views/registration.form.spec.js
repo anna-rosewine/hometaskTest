@@ -1,7 +1,13 @@
 import {RegistrationForm} from "./registration.form";
 import {beforeEach, describe, it, jest} from "@jest/globals";
 let form;
-
+function triggerEvent(el, type){
+    if ('createEvent' in document) {
+        const e = document.createEvent('HTMLEvents');
+        e.initEvent(type, false, true);
+        el.dispatchEvent(e);
+    }
+}
 beforeEach(() => {
     form = new RegistrationForm();
     document.body.innerHTML = "";
@@ -46,7 +52,208 @@ describe('RegistrationForm', () => {
             expect(btn).toBeTruthy();
         })
     });
-    describe('Button Create Account', () => {
+    describe('Email Input', () => {
+        describe('should check if mail valid', () => {
+            it('should spy on checkEmailValidation() method', () => {
+                expect.assertions(1);
+                document.body.innerHTML = " ";
+                const keyUp = jest.spyOn(RegistrationForm.prototype, 'checkEmailValidation');
+                const r = new RegistrationForm();
+                document.body.append(r.dom);
+                const input = document.getElementById('emailInput');
+                input.focus();
+                triggerEvent(input, 'keydown');
+                triggerEvent(input, 'keyup');
+                expect(keyUp).toBeCalled();
+            })
+            it('should render not valid message if email is not valid', () => {
+                expect.assertions(2);
+                form.emailValue = 'someNotValidEmail';
+                form.checkEmailValidation()
+                expect(form.checkEmailValidation()).toEqual(false);
+                expect(form.emailState).toEqual(expect.stringContaining( 'Your email is not valid'));
+            })
+            it('should render valid message if email is valid', () => {
+                expect.assertions(2);
+                form.emailValue = 'jensen.ackles@gmail.com';
+                form.checkEmailValidation()
+                expect(form.checkEmailValidation()).toEqual(true);
+                expect(form.emailState).toEqual(expect.stringContaining( 'Your email is valid'));
+            })
+
+        });
+    })
+    describe('Password Input', () => {
+
+        // describe('listen to method', () => {
+        //     it('should spy on checkPassword() method', () => {
+        //         expect.assertions(1);
+        //         document.body.innerHTML = " ";
+        //         const keyUp = jest.spyOn(RegistrationForm.prototype, 'checkPassword').mockImplementation(() => {
+        //             return true;
+        //         });
+        //         const r = new RegistrationForm();
+        //         document.body.append(r.dom);
+        //         const input = document.getElementById('passwordInput');
+        //         input.focus();
+        //         triggerEvent(input, 'keydown');
+        //         triggerEvent(input, 'keyup');
+        //         expect(keyUp).toBeCalled();
+        //     })
+        // })
+
+        describe('password length' , () => {
+            it('should render message, that length should be not less, than 8', () => {
+                expect.assertions(2);
+                form.passwordValue = 'anna';
+                form.checkPassword()
+                expect(form.checkPassword()).toBe(false);
+                expect(form.passwordState).toContain('Your password should not be less, than 8 symbols');
+            })
+
+            it('should not render message about length, if its correct', () => {
+                expect.assertions(1);
+                form.passwordValue = 'jensenAckles';
+                form.checkPassword()
+                expect(form.passwordState).not.toContain('Your password should not be less, than 8 symbols');
+            })
+        })
+
+        describe('password contain number', () => {
+            it('should render message, that password should contain number, if its not', () => {
+                expect.assertions(2);
+                form.passwordValue = 'anna';
+                form.checkPassword()
+                expect(form.checkPassword()).toBe(false);
+                expect(form.passwordState).toEqual(expect.stringContaining('Your password should contain a number'));
+            })
+
+            it('should not render message, that password should contain number, if it has got', () => {
+                expect.assertions(1);
+                form.passwordValue = 'anna9';
+                form.checkPassword()
+                expect(form.passwordState).not.toEqual(expect.stringContaining('Your password should contain a number'));
+            })
+        })
+
+        describe('lowercase symbol', () => {
+            it('should render message, that password should contain lowercase eng symbol, if it does not has', () => {
+                expect.assertions(2);
+                form.passwordValue = 'ADHIL9';
+                form.checkPassword()
+                expect(form.checkPassword()).toBe(false);
+                expect(form.passwordState).toEqual(expect.stringContaining('Your password should contain english symbol lowercase'));
+            })
+
+            it('should not render message, that password should contain lowercase eng symbol, if it has', () => {
+                expect.assertions(1);
+                form.passwordValue = 'ADasdL9';
+                form.checkPassword()
+                expect(form.passwordState).not.toEqual(expect.stringContaining('Your password should contain english symbol lowercase'));
+            })
+        })
+
+        describe('uppercase symbol', () => {
+            it('should render message, that password should contain eng symb uppercase, if it does not has', () => {
+                expect.assertions(2);
+                form.passwordValue ='anna9';
+                form.checkPassword()
+                expect(form.checkPassword()).toBe(false);
+                expect(form.passwordState).toEqual(expect.stringContaining('Your password should contain english symbol uppercase'));
+
+            })
+
+            it('should not render message, that password should contain eng symb uppercase, if it has', () => {
+                expect.assertions(1);
+                form.passwordValue ='aNNa9';
+                form.checkPassword()
+                expect(form.passwordState).not.toEqual(expect.stringContaining('Your password should contain english symbol uppercase'));
+
+            })
+        })
+
+        describe('special symbol', () => {
+            it('should render message, that password should contain special symbol if it does not has', () => {
+                expect.assertions(2);
+                form.passwordValue = 'anna9';
+                form.checkPassword()
+                expect(form.checkPassword()).toBe(false);
+                expect(form.passwordState).toEqual(expect.stringContaining('Your password should contain special symbol'))
+            })
+
+            it('should not render message, that password should contain special symbol, if it has', () => {
+                expect.assertions(1);
+                form.passwordValue = 'ann@a9';
+                form.checkPassword()
+                expect(form.passwordState).not.toEqual(expect.stringContaining('Your password should contain special symbol'))
+            })
+
+        })
+
+        it('should check if password is acceptable', () => {
+            expect.assertions(2);
+            form.passwordValue= "Jensen7@Ackles";
+            form.checkPassword()
+            expect(form.checkPassword()).toBe(true);
+            expect(form.passwordState).toEqual('Your password is acceptable')
+        })
+
+        describe('listen to method', () => {
+            it('should spy on checkPassword() method', () => {
+                expect.assertions(1);
+                document.body.innerHTML = " ";
+                const keyUp = jest.spyOn(RegistrationForm.prototype, 'checkPassword').mockImplementation(() => {
+                    return true;
+                });
+                const r = new RegistrationForm();
+                document.body.append(r.dom);
+                const input = document.getElementById('passwordInput');
+                input.focus();
+                triggerEvent(input, 'keydown');
+                triggerEvent(input, 'keyup');
+                expect(keyUp).toBeCalled();
+            })
+        })
+    })
+    describe('Repeat Password Input', () => {
+        it('should render error message match with password input', () => {
+            expect.assertions(2);
+            form.passwordValue = "Ackles222@Jensen";
+            form.repeatPasswordValue = "Anna";
+            expect(form.checkRepeatPass()).toBe(false);
+            expect(form.repeatPasswordState).toEqual(expect.stringContaining('Passwords do not match'))
+        })
+        it('should not render error message', () => {
+            expect.assertions(2);
+            form.passwordValue = "Ackles222@Jensen";
+            form.repeatPasswordValue = "Ackles222@Jensen";
+            expect(form.checkRepeatPass()).toBe(true);
+            expect(form.repeatPasswordState).not.toEqual(expect.stringContaining('Passwords do not match'))
+        })
+        describe('listen to method', () => {
+            it('should spy on checkRepeatPassword() method', () => {
+                expect.assertions(1);
+                document.body.innerHTML = " ";
+                const keyUp = jest.spyOn(RegistrationForm.prototype, 'checkRepeatPass').mockImplementation(() => {
+                    return true;
+                });
+                const r = new RegistrationForm();
+                document.body.append(r.dom);
+                const input = document.getElementById('repeatPasswordInput');
+                input.focus();
+                triggerEvent(input, 'keydown');
+                triggerEvent(input, 'keyup');
+                expect(keyUp).toBeCalled();
+            })
+        })
+    })
+    describe.only('Button Create Account', () => {
+
+        it('should be disabled', () => {
+            expect.assertions(1);
+            const btn = document.getElementById('createAccount');
+            expect(btn.disabled).toBe(true);
+        })
         it('should call createAccount() method if clicked', () => {
             expect.assertions(1);
             document.body.innerHTML = " ";
@@ -59,74 +266,9 @@ describe('RegistrationForm', () => {
             btn.click();
             expect(clickSpy).toBeCalled();
         });
-        it('should be disabled', () => {
-            expect.assertions(1);
-            const btn = document.getElementById('createAccount');
-            expect(btn.disabled).toBe(true);
-        })
+        // it('should work if email, password, repeat password inputs are valid', () => {
+        //     expect.assertions(1);
+        //     expect()
+        // })
     });
-    describe('Email Input', () => {
-        it('should check if mail valid', () => {
-            expect.assertions(2);
-            // document.body.innerHTML = " ";
-            // const keyUp = jest.spyOn(RegistrationForm, "checkEmailValidation");
-            // const r = new RegistrationForm();
-            // document.body.append(r.dom);
-            const enteredValidEmail = "jensen.ackles@gmail.com";
-            const enteredInvalidEmail = "somethingWrong";
-            expect(form.checkEmailValidation(enteredValidEmail)).toBe(true);
-            expect(form.checkEmailValidation(enteredInvalidEmail)).toEqual('Your email is not valid')
-        });
-    })
-    describe('Password Input', () => {
-        it('length should be not less, than 8', () => {
-            expect.assertions(1);
-            const password = 'anna';
-            form.checkPassword(password)
-            expect(form.errors).toContain('Your password should not be less, than 8 symbols');
-        })
-
-        it('should contain number', () => {
-            expect.assertions(1);
-            const password = 'anna';
-            form.checkPassword(password)
-            expect(form.errors).toEqual(expect.stringContaining('Your password should contain a number'));
-        })
-
-        it('should contain lowercase eng symbol', () => {
-            expect.assertions(1);
-            const password = 'ADHIL9';
-            form.checkPassword(password)
-            expect(form.errors).toEqual(expect.stringContaining('Your password should contain english symbol lowercase'));
-        })
-
-        it('should contain eng symb uppercase', () => {
-            expect.assertions(1);
-            const password = 'anna9';
-            form.checkPassword(password)
-            expect(form.errors).toEqual(expect.stringContaining('Your password should contain english symbol uppercase'));
-
-        })
-
-        it('should contain special symbol', () => {
-            expect.assertions(1);
-            const password = 'anna9';
-            expect(form.checkPassword(password)).toEqual(expect.stringContaining('Your password should contain special symbol'))
-        })
-
-        it('should check if password is acceptable', () => {
-            expect.assertions(1);
-            const password = "Jensen7@Ackles";
-            expect(form.checkPassword(password)).toEqual('Your password is acceptable')
-        })
-    })
-    describe('Repeat Password Input', () => {
-        it('should match with password inout', () => {
-            expect.assertions(1);
-            const pass = "Ackles222@Jensen";
-            const repeatCorrect = "Ackles222@Jensen";
-            const repeatIncorrect = "Anna";
-            expect(form.matchError).toEqual(expect.stringContaining('Passwords do not match'))
-        })
-    })
 });
