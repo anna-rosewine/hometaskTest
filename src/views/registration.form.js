@@ -8,24 +8,24 @@ export class RegistrationForm {
     #repeatPasswordInput;
     #btn;
 
-    #emailValidState;
+    emailState;
     #emailValidContainer;
 
-    #passwordValidState;
+    passwordState;
     #passwordValidContainer;
 
-    #repeatPasswordValidState;
+    repeatPasswordState;
     #repeatPasswordValidContainer;
 
     constructor(){
         this.#dom = el("div#container", "RegistrationForm");
         this.#header = el("h2#header", "Create account");
         this.#emailInput = el("input#emailInput");
-        this.#emailValidContainer = el("div.validationInfo", this.#emailValidState);
+        this.#emailValidContainer = el("div.validationInfo", this.emailState);
         this.#passwordInput = el("input#passwordInput");
-        this.#passwordValidContainer = el("div.validationInfo", this.#passwordValidState);
+        this.#passwordValidContainer = el("div.validationInfo", this.passwordState);
         this.#repeatPasswordInput = el("input#repeatPasswordInput");
-        this.#repeatPasswordValidContainer = el("div.validationInfo", this.#repeatPasswordValidState);
+        this.#repeatPasswordValidContainer = el("div.validationInfo", this.repeatPasswordState);
         this.#btn = el("button#createAccount", {disabled: true}, "Create account");
 
         mount(this.#dom, this.#header);
@@ -47,27 +47,6 @@ export class RegistrationForm {
 
     get dom () {
         return this.#dom;
-    }
-
-    get emailState(){
-        return this.#emailValidState;
-    }
-    set emailState(state){
-        return this.#emailValidState = state;
-    }
-
-    get passwordState(){
-        return this.#passwordValidState;
-    }
-    set passwordState(state){
-        return this.#passwordValidState = state;
-    }
-
-    get repeatPasswordState(){
-        return this.#repeatPasswordValidState;
-    }
-    set repeatPasswordState(state){
-        return this.#repeatPasswordValidState = state;
     }
 
     get emailInput () {

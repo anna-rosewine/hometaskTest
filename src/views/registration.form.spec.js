@@ -1,5 +1,5 @@
 import {RegistrationForm} from "./registration.form";
-import {beforeEach, describe, it, jest} from "@jest/globals";
+
 let form;
 function triggerEvent(el, type){
     if ('createEvent' in document) {
